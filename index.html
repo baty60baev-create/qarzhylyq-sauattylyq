@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Қаржылық Сауаттылық: Сайысқа Саяхат 🌸</title>
+  <style>
+    :root {
+      --primary: #6c5ce7;
+      --primary-light: #a29bfe;
+      --secondary: #fd79a8;
+      --card-bg: #ffffff;
+      --text: #2d3436;
+      --text-muted: #636e72;
+      --success: #00b894;
+      --danger: #d63031;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #fceef5 0%, #e8f0fe 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: var(--card-bg);
+      max-width: 800px;
+      width: 100%;
+      border-radius: 24px;
+      box-shadow: 0 15px 35px rgba(108, 92, 231, 0.12);
+      padding: 30px;
+      overflow: hidden;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      color: var(--primary);
+      margin-bottom: 6px;
+    }
+
+    /* Жоғарғы бюджет тақтасы */
+    .budget-bar {
+      position: sticky;
+      top: 0;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      padding: 12px 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border: 1.5px solid #eceff1;
+      z-index: 10;
+    }
+
+    .budget-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .budget-pill {
+      font-weight: bold;
+      font-size: 19px;
+      color: var(--primary);
+      transition: all 0.3s ease;
+    }
+
+    .budget-pill.negative {
+      color: var(--danger);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .desc {
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 20px;
+      font-size: 15px;
+    }
+
+    .alert-box {
+      background: #fff0f3;
+      border-left: 4px solid var(--danger);
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin: 15px 0;
+      color: #c0392b;
+      font-size: 14px;
+      display: none;
+    }
+
+    /* 1-тапсырма тауарлар торшасы */
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 12px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding-right: 6px;
+      margin-bottom: 20px;
+    }
+
+    .item-card {
+      border: 1.5px solid #eceff1;
+      border-radius: 14px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #fff;
+    }
+
+    .item-card:hover {
+      border-color: var(--primary-light);
+      background-color: #faf9ff;
+    }
+
+    .item-card.selected {
+      border-color: var(--primary);
+      background-color: #f1f0ff;
+    }
+
+    .item-card.selected::after {
+      content: '✓';
+      margin-left: 8px;
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    .item-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .item-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .item-cat {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .item-price {
+      font-weight: bold;
+      color: var(--primary);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    /* 2-тапсырма */
+    .team-decision {
+      background: #fdf8ff;
+      border: 1.5px dashed var(--primary-light);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* 3-тапсырма кезеңдер индикаторы */
+    .stage-badge {
+      display: inline-block;
+      background: #eeeaff;
+      color: var(--primary);
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .situation-box {
+      background: #fff8f8;
+      border-left: 6px solid var(--secondary);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+
+    .situation-box h3 {
+      font-size: 18px;
+      color: #c0392b;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .situation-box p {
+      font-size: 15px;
+      line-height: 1.65;
+      color: #333;
+    }
+
+    .situation-cost {
+      font-weight: bold;
+      color: var(--danger);
+      margin-top: 15px;
+      font-size: 17px;
+    }
+
+    /* Финалдық чек / Есеп */
+    .receipt-card {
+      background: #fbfbfd;
+      border: 1.5px dashed #d1d8e0;
+      border-radius: 18px;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .receipt-title {
+      text-align: center;
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 14px;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .receipt-section {
+      margin-bottom: 12px;
+    }
+
+    .receipt-section-title {
+      font-weight: 700;
+      color: var(--text-muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      border-bottom: 1px solid #edf2f7;
+      padding-bottom: 4px;
+      margin-bottom: 6px;
+    }
+
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      line-height: 1.4;
+    }
+
+    .receipt-divider {
+      border-top: 2px dashed #cbd5e0;
+      margin: 12px 0;
+    }
+
+    /* Батырмалар */
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      font-size: 15px;
+      font-weight: bold;
+      border-radius: 30px;
+      cursor: pointer;
+      width: 100%;
+      transition: opacity 0.2s, transform 0.1s;
+      text-align: center;
+    }
+
+    .btn:hover {
+      opacity: 0.93;
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-outline:hover {
+      background: #f4f2ff;
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, #e17055, #d63031);
+      color: #fff;
+    }
+
+    /* Қорытынды нәтиже */
+    .result-box {
+      text-align: center;
+      padding: 15px 5px;
+    }
+
+    .result-icon {
+      font-size: 55px;
+      margin-bottom: 12px;
+    }
+
+    .final-quote {
+      font-size: 17px;
+      font-weight: 600;
+      color: #2c3e50;
+      background: #f4f9ff;
+      padding: 20px;
+      border-radius: 18px;
+      border: 1.5px dashed var(--primary);
+      margin: 20px 0;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>🏆 Сайысқа Саяхат: Қаржылық Сауаттылық</h1>
+    </div>
+
+    <!-- Тұрақты Бюджет Индикаторы -->
+    <div class="budget-bar" id="budgetBar" style="display: none;">
+      <span class="budget-title">Қалған қаражат:</span>
+      <span class="budget-pill" id="budgetDisplay">42 500 ₸</span>
+    </div>
+
+    <!-- 0-ЭКРАН: КІРІСПЕ -->
+    <div class="screen active" id="screenIntro">
+      <p class="desc">
+        Сәлем, жас сайыскер! 🌟 Сен алдағы <b>2 апталық (14 күн)</b> республикалық жарысқа бара жатырсың.
+        Әкең саған отбасылық бюджеттен <b>42 500 теңге</b> бөлді.<br><br>
+        Сенің міндетің — бұл қаражатты ақылмен бөліп, төтенше жағдайлардың әр бөлімінен сүрінбей өтіп, сайыс соңына жеткізу. Егер ақшаң таусылса, кез келген кезде 1-тапсырмаға қайта оралып, таңдауларыңды өзгерте аласың! 🌸✨
+      </p>
+      <button class="btn" onclick="startGame()">Ойынды бастау 🚀</button>
+    </div>
+
+    <!-- 1-ЭКРАН: 1-ТАПСЫРМА (ЖЕКЕ БАСЫМДЫҚ) -->
+    <div class="screen" id="screenTask1">
+      <h2>1-тапсырма: Жеке басымдық қою 🛒</h2>
+      <p class="desc">
+        Төмендегі 20 нұсқадан керектілерін таңда немесе қымбаттарын алып тастап, бюджетіңді үнемде:
+      </p>
+      <div class="items-grid" id="itemsContainer"></div>
+      <button class="btn" onclick="finishTask1()">Таңдауды сақтау & 2-тапсырмаға өту ➜</button>
+    </div>
+
+    <!-- 2-ЭКРАН: 2-ТАПСЫРМА (ТОПТЫҚ ШЕШІМ) -->
+    <div class="screen" id="screenTask2">
+      <h2>2-тапсырма: Топтық ортақ шешім 🤝</h2>
+      <p class="desc">
+        Командаңмен бірігіп шығындарды азайта аласың! Керекті шешімдерді таңдап, бюджетіңе ақша қайтар:
+      </p>
+      
+      <div class="team-decision">
+        <div>
+          <b>1. Ортақ дәріхана және құралдар</b><br>
+          <small>Дәрі-дәрмек пен кеңсе заттарын топ болып ортақ пайдалану</small>
+        </div>
+        <button class="btn btn-outline" style="width:auto;" id="saveBtn1" onclick="toggleTeamSaving(1, 2000, 'Ортақ дәріхана мен құралдар')">+2 000 ₸ үнемдеу</button>
+      </div>
+
+      <div class="team-decision">
+        <div>
+          <b>2. Бірге таксиге міну</b><br>
+          <small>Қала ішінде 4 бала болып бір көліктің ақысын тең бөлісу</small>
+        </div>
+        <button class="btn btn-outline" style="width:auto;" id="saveBtn2" onclick="toggleTeamSaving(2, 2500, 'Бірге таксиге міну')">+2 500 ₸ үнемдеу</button>
+      </div>
+
+      <div class="team-decision">
+        <div>
+          <b>3. Ынтымақты кешкі шай-тағам</b><br>
+          <small>Дайын тамақты жеке алғанша, бірлесіп дүкеннен алып дайындау</small>
+        </div>
+        <button class="btn btn-outline" style="width:auto;" id="saveBtn3" onclick="toggleTeamSaving(3, 3000, 'Ынтымақты кешкі шай-тағам')">+3 000 ₸ үнемдеу</button>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="goToTask1()">« 1-тапсырмаға оралу</button>
+        <button class="btn" onclick="startTask3()">3-тапсырмаға (Төтенше жағдайларға) өту ➜</button>
+      </div>
+    </div>
+
+    <!-- 3-ЭКРАН: 3-ТАПСЫРМА (БӨЛІМДЕР БОЙЫНША ТӨТЕНШЕ ЖАҒДАЙЛАР) -->
+    <div class="screen" id="screenTask3">
+      <h2>3-тапсырма: Төтенше жағдайлар сынағы ⚡</h2>
+      <div class="stage-badge" id="stageBadgeText">1-бөлім (3 бөлімнің 1-кезеңі)</div>
+      
+      <p class="desc" id="stageDescText">
+        Жарыс барысында күтпеген жағдай туындады! Бұл оқиғаны шешіп, келесі бөлімге өту қажет:
+      </p>
+
+      <div class="situation-box">
+        <h3 id="stageTitle">⚡ Жағдай</h3>
+        <p id="stageStory">Оқиға сипаттамасы...</p>
+        <div class="situation-cost" id="stageCostText">Шығын: 0 ₸</div>
+      </div>
+
+      <div class="alert-box" id="task3Warning">
+        ⚠️ <b>Қаражатың таусылып қалды!</b> Балансың теріс мәнге (минусқа) түсті. 1-тапсырмаға оралып, артық шығындарды алып тастауың қажет!
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-outline" onclick="goToTask1()">✏️ 1-тапсырмаға оралып, бюджетті реттеу</button>
+        <button class="btn" id="nextStageBtn" onclick="proceedToNextStage()">Шығынды қабылдау & Келесі бөлімге өту ➜</button>
+      </div>
+    </div>
+
+    <!-- 4-ЭКРАН: ҚОРЫТЫНДЫ ЖӘНЕ ТОЛЫҚ ЧЕК -->
+    <div class="screen" id="screenResult">
+      <div class="result-box">
+        <div class="result-icon" id="resultIcon">🎉</div>
+        <h2 id="resultTitle">Қаржылық Саяхат Аяқталды!</h2>
+        
+        <p style="margin-top: 10px; font-size: 16px;">
+          Сайыс соңында қалған ақша: <b id="finalAmountText" style="font-size: 22px;"></b>
+        </p>
+        
+        <div class="final-quote" id="finalQuoteText"></div>
+
+        <!-- Ойын соңындағы толық чек / таңдаулар есебі -->
+        <div class="receipt-card" id="receiptContainer">
+          <div class="receipt-title">🧾 Сенің қаржылық есебің (Чек)</div>
+          
+          <div class="receipt-section">
+            <div class="receipt-section-title">1-тапсырма: Сен таңдаған заттар</div>
+            <div id="receiptItemsList"></div>
+          </div>
+
+          <div class="receipt-section">
+            <div class="receipt-section-title">2-тапсырма: Топтық үнемдеулер</div>
+            <div id="receiptSavingsList"></div>
+          </div>
+
+          <div class="receipt-section">
+            <div class="receipt-section-title">3-тапсырма: Кездескен 3 төтенше жағдай</div>
+            <div id="receiptEmergenciesList"></div>
+          </div>
+
+          <div class="receipt-divider"></div>
+          
+          <div class="receipt-row" style="font-weight: bold; color: var(--text-muted);">
+            <span>Бастапқы бюджет:</span>
+            <span>42 500 ₸</span>
+          </div>
+          <div class="receipt-row" style="font-weight: bold; color: var(--danger);" id="receiptTotalSpentRow">
+            <span>Жалпы шығындар:</span>
+            <span>-0 ₸</span>
+          </div>
+          <div class="receipt-row" style="font-weight: bold; color: var(--success);" id="receiptTotalSavedRow">
+            <span>Жалпы үнемдеулер:</span>
+            <span>+0 ₸</span>
+          </div>
+          <div class="receipt-row" style="font-size: 16px; font-weight: 800; color: var(--primary); margin-top: 6px;" id="receiptFinalBalanceRow">
+            <span>Қорытынды қалдық:</span>
+            <span>0 ₸</span>
+          </div>
+        </div>
+
+        <div class="btn-row" id="resultBtnGroup">
+          <button class="btn btn-warning" id="retryAdjustBtn" style="display:none;" onclick="goToTask1()">✏️ 1-тапсырмаға қайтып, бюджетті түзеу</button>
+          <button class="btn btn-outline" onclick="resetAllGame()">Қайта жаңа ойын бастау 🔁</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const INITIAL_BUDGET = 42500;
+
+    // 1-тапсырма: 20 шығын
+    const items = [
+      { id: 1, name: "2 апталық түскі ыстық ас", cat: "Азық-түлік", price: 14000 },
+      { id: 2, name: "Снектер мен печеньелер", cat: "Азық-түлік", price: 3500 },
+      { id: 3, name: "Жеміс-жидек пен витаминдер", cat: "Азық-түлік", price: 3000 },
+      { id: 4, name: "Тәттілер мен шоколад", cat: "Азық-түлік", price: 2000 },
+      { id: 5, name: "Интернет-тариф (14 күн)", cat: "Байланыс", price: 3990 },
+      { id: 6, name: "Қосымша гигабайттар", cat: "Байланыс", price: 1500 },
+      { id: 7, name: "Қоғамдық көлік картасы", cat: "Жол жүру", price: 3000 },
+      { id: 8, name: "Таксиге арналған резерв", cat: "Жол жүру", price: 4000 },
+      { id: 9, name: "Жеке гигиена құралдары", cat: "Күтім", price: 2000 },
+      { id: 10, name: "Жеке шағын дәрі қобдишасы", cat: "Денсаулық", price: 1800 },
+      { id: 11, name: "Кеңсе тауарлары мен дәптер", cat: "Оқу", price: 1500 },
+      { id: 12, name: "Брендтік жаңа киім", cat: "Шопинг", price: 9500 },
+      { id: 13, name: "Жылы жейде / шұлық", cat: "Киім", price: 2500 },
+      { id: 14, name: "Кір жуу қызметі (прачечная)", cat: "Тұрмыс", price: 2000 },
+      { id: 15, name: "Отбасыға естелік сувенир", cat: "Сыйлық", price: 3000 },
+      { id: 16, name: "Командамен пиццерияға бару", cat: "Сауық", price: 4500 },
+      { id: 17, name: "Күнделікті кофе / энергетик", cat: "Сауық", price: 2500 },
+      { id: 18, name: "Киноға не ойын залына бару", cat: "Сауық", price: 3500 },
+      { id: 19, name: "Қосалқы қуаттағыш (пауэрбанк)", cat: "Техника", price: 4500 },
+      { id: 20, name: "Қол тимейтін қауіпсіздік қоры", cat: "Қор", price: 3500 }
+    ];
+
+    // 8 төтенше жағдайдың толық базасы
+    const allSituations = [
+      {
+        id: 1,
+        title: "Денсаулық пен сайыс құралы",
+        day: "7-күн",
+        desc: "Жарыстың 7-күні сен ауырып қалдың. Дәрі алуға 3 500 ₸ қажет болды. Сонымен қатар команда жетекшісі жарысқа қажетті қосымша құралды өзің сатып алуың керек екенін айтты — 2 500 ₸.",
+        cost: 6000
+      },
+      {
+        id: 2,
+        title: "Жол жүру билеті & құрал ақауы",
+        day: "11-күн",
+        desc: "Төтенше жағдай! Сенің жол жүру билетіңнің қайту уақыты өзгерді, оны ауыстыруға қосымша 3 000 ₸ қажет. Сонымен қатар жарысқа қажетті құралдың бір бөлігі сынып қалды, жаңасына 2 500 ₸ керек.",
+        cost: 5500
+      },
+      {
+        id: 3,
+        title: "Байланыс құралының бұзылуы",
+        day: "4-күн",
+        desc: "Күтпеген жағдай! Телефоныңыз сынып қалды. Жөндеуге 8 000 ₸ қажет. Егер жөндемесеңіз, жұмысқа/оқуға байланысты маңызды ақпаратқа қол жеткізе алмайсыз.",
+        cost: 8000
+      },
+      {
+        id: 4,
+        title: "Қонақүй айыппұлы & Ресми форма",
+        day: "9-күн",
+        desc: "Қонақүй бөлмесінің электронды картасын жоғалтып алдың (айыппұл — 2 000 ₸) және финалдық салтанатты марапаттауға ресми костюмді жедел тазалатып, үтіктетуге 2 500 ₸ кетті.",
+        cost: 4500
+      },
+      {
+        id: 5,
+        title: "Ауа райының күрт бұзылуы",
+        day: "3-күн",
+        desc: "Қалада қатты нөсер жауып, күн кенеттен суытып кетті. Сырқаттанып қалмас үшін шұғыл түрде жылы мойынбау мен сапалы қолшатыр сатып алуға тура келді.",
+        cost: 3500
+      },
+      {
+        id: 6,
+        title: "Жобалық постерді қайта шығару",
+        day: "12-күн",
+        desc: "Жоба қорғауға арналған үлкен постер-плакатқа абайсызда су төгіліп кетті. Түнгі типографиядан шұғыл қайта басып шығару қажет болды.",
+        cost: 4000
+      },
+      {
+        id: 7,
+        title: "Жол сөмкесінің зақымдануы",
+        day: "2-күн",
+        desc: "Сайыс залына бара жатқан жолда жол рюкзагының сырмасы жыртылып қалды. Құжаттар шашылмауы үшін жаңа мықты сөмке сатып алуға немесе жөндетуге ақша жұмсалды.",
+        cost: 4500
+      },
+      {
+        id: 8,
+        title: "Шұғыл такси және көлік қатынасы",
+        day: "8-күн",
+        desc: "Сайыстың практикалық туры қаланың екінші шетіндегі арнайы лабораторияға ауыстырылды. Автобус бармайтындықтан, командамен такси ұстауға мәжбүр болдың.",
+        cost: 3500
+      }
+    ];
+
+    // Ойын күйі (State)
+    let selectedItems = new Set();
+    let appliedSavings = new Map(); // id -> { name, amount }
+    let currentRandomSituations = []; // 3 кездейсоқ жағдай
+    let currentStageIndex = 0; // 0, 1, 2 (3 бөлім)
+    let currentScreen = "screenIntro";
+
+    function calculateSpentOnItems() {
+      let spent = 0;
+      selectedItems.forEach(id => {
+        const itm = items.find(i => i.id === id);
+        if (itm) spent += itm.price;
+      });
+      return spent;
+    }
+
+    function calculateTotalSaved() {
+      let saved = 0;
+      appliedSavings.forEach(item => saved += item.amount);
+      return saved;
+    }
+
+    function calculateEmergenciesCostSoFar() {
+      let cost = 0;
+      if (currentScreen === "screenTask3") {
+        for (let i = 0; i <= currentStageIndex; i++) {
+          if (currentRandomSituations[i]) cost += currentRandomSituations[i].cost;
+        }
+      } else if (currentScreen === "screenResult") {
+        currentRandomSituations.forEach(s => cost += s.cost);
+      }
+      return cost;
+    }
+
+    function calculateCurrentBalance() {
+      return INITIAL_BUDGET - calculateSpentOnItems() + calculateTotalSaved() - calculateEmergenciesCostSoFar();
+    }
+
+    function updateBudgetUI() {
+      const balance = calculateCurrentBalance();
+      const display = document.getElementById("budgetDisplay");
+      display.innerText = balance.toLocaleString("kk-KZ") + " ₸";
+
+      if (balance < 0) {
+        display.classList.add("negative");
+      } else {
+        display.classList.remove("negative");
+      }
+
+      const warningBox = document.getElementById("task3Warning");
+      if (warningBox) {
+        warningBox.style.display = (currentScreen === "screenTask3" && balance < 0) ? "block" : "none";
+      }
+    }
+
+    function switchScreen(targetId) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      document.getElementById(targetId).classList.add("active");
+      currentScreen = targetId;
+      updateBudgetUI();
+    }
+
+    function startGame() {
+      document.getElementById("budgetBar").style.display = "flex";
+      renderItems();
+      switchScreen("screenTask1");
+    }
+
+    function renderItems() {
+      const container = document.getElementById("itemsContainer");
+      container.innerHTML = "";
+      items.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "item-card" + (selectedItems.has(item.id) ? " selected" : "");
+        card.innerHTML = `
+          <div class="item-info">
+            <span class="item-name">${item.name}</span>
+            <span class="item-cat">${item.cat}</span>
+          </div>
+          <div class="item-price">${item.price.toLocaleString("kk-KZ")} ₸</div>
+        `;
+        card.onclick = () => {
+          if (selectedItems.has(item.id)) {
+            selectedItems.delete(item.id);
+            card.classList.remove("selected");
+          } else {
+            selectedItems.add(item.id);
+            card.classList.add("selected");
+          }
+          updateBudgetUI();
+        };
+        container.appendChild(card);
+      });
+    }
+
+    function finishTask1() {
+      switchScreen("screenTask2");
+    }
+
+    function goToTask1() {
+      renderItems();
+      switchScreen("screenTask1");
+    }
+
+    function toggleTeamSaving(id, amount, name) {
+      const btn = document.getElementById("saveBtn" + id);
+      if (appliedSavings.has(id)) {
+        appliedSavings.delete(id);
+        btn.innerText = `+${amount.toLocaleString("kk-KZ")} ₸ үнемдеу`;
+        btn.style.background = "transparent";
+        btn.style.color = "var(--primary)";
+      } else {
+        appliedSavings.set(id, { name, amount });
+        btn.innerText = "Қолданылды ✓";
+        btn.style.background = "var(--success)";
+        btn.style.color = "#fff";
+      }
+      updateBudgetUI();
+    }
+
+    // 8 ситуацияның ішінен кездейсоқ 3 ситуация алу
+    function pickRandomThreeSituations() {
+      const shuffled = [...allSituations].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, 3);
+    }
+
+    function startTask3() {
+      if (currentRandomSituations.length === 0) {
+        currentRandomSituations = pickRandomThreeSituations();
+        currentStageIndex = 0;
+      }
+      loadStage(currentStageIndex);
+      switchScreen("screenTask3");
+    }
+
+    // Төтенше жағдайдың нақты 1 бөлімін көрсету
+    function loadStage(index) {
+      currentStageIndex = index;
+      const sit = currentRandomSituations[index];
+
+      document.getElementById("stageBadgeText").innerText = `${index + 1}-бөлім (3 бөлімнің ${index + 1}-кезеңі) • 📅 ${sit.day}`;
+      document.getElementById("stageTitle").innerHTML = `⚡ ${index + 1}-бөлім: ${sit.title}`;
+      document.getElementById("stageStory").innerText = sit.desc;
+      document.getElementById("stageCostText").innerText = `Бұл бөлімдегі шығын: -${sit.cost.toLocaleString("kk-KZ")} ₸`;
+
+      const btn = document.getElementById("nextStageBtn");
+      if (index < 2) {
+        btn.innerText = `Шығынды қабылдау & ${index + 2}-бөлімге өту ➜`;
+      } else {
+        btn.innerText = `Шығынды қабылдау & Нәтижені көру 🏁`;
+      }
+      updateBudgetUI();
+    }
+
+    function proceedToNextStage() {
+      if (currentStageIndex < 2) {
+        loadStage(currentStageIndex + 1);
+      } else {
+        showResults();
+      }
+    }
+
+    // Қорытынды нәтижелер және Толық Чекті толтыру
+    function showResults() {
+      switchScreen("screenResult");
+
+      const finalBalance = calculateCurrentBalance();
+      const finalAmountText = document.getElementById("finalAmountText");
+      finalAmountText.innerText = finalBalance.toLocaleString("kk-KZ") + " ₸";
+
+      const icon = document.getElementById("resultIcon");
+      const title = document.getElementById("resultTitle");
+      const quoteBox = document.getElementById("finalQuoteText");
+      const retryBtn = document.getElementById("retryAdjustBtn");
+
+      if (finalBalance >= 0) {
+        icon.innerText = "🏆✨";
+        title.innerText = "Керемет! Сайысты сәтті аяқтадың!";
+        finalAmountText.style.color = "var(--success)";
+        quoteBox.innerText = "Сен өз қаржыңды сауатты түрде басқара алдың. Сен болашақ өмірге жол бастадың, өз қаржыңды сауатты басқаруды әрі қарай дамыт ✨";
+        retryBtn.style.display = "none";
+      } else {
+        icon.innerText = "🥺💔";
+        title.innerText = "Қаражат жетпей қалды...";
+        finalAmountText.style.color = "var(--danger)";
+        quoteBox.innerText = "Қап, форс-мажорлық жағдайлардан кейін қаражатың жетпей, минусқа түсіп қалдың. Ештеңе етпейді, күнім! 1-тапсырмаға қайта орал да, қажетсіз қымбат заттарды алып тастап, бюджетіңді дұрыстап көрші 🌸";
+        retryBtn.style.display = "block";
+      }
+
+      // ЧЕКТІ ТОЛТЫРУ:
+      // 1. Таңдалған заттар
+      const itemsListContainer = document.getElementById("receiptItemsList");
+      itemsListContainer.innerHTML = "";
+      if (selectedItems.size === 0) {
+        itemsListContainer.innerHTML = `<div class="receipt-row" style="color:var(--text-muted);"><i>Ешқандай зат таңдалмаған</i><span>0 ₸</span></div>`;
+      } else {
+        selectedItems.forEach(id => {
+          const item = items.find(i => i.id === id);
+          if (item) {
+            itemsListContainer.innerHTML += `
+              <div class="receipt-row">
+                <span>• ${item.name}</span>
+                <span style="font-weight:600;">-${item.price.toLocaleString("kk-KZ")} ₸</span>
+              </div>`;
+          }
+        });
+      }
+
+      // 2. Командалық үнемдеулер
+      const savingsListContainer = document.getElementById("receiptSavingsList");
+      savingsListContainer.innerHTML = "";
+      if (appliedSavings.size === 0) {
+        savingsListContainer.innerHTML = `<div class="receipt-row" style="color:var(--text-muted);"><i>Үнемдеу қолданылмаған</i><span>0 ₸</span></div>`;
+      } else {
+        appliedSavings.forEach(saving => {
+          savingsListContainer.innerHTML += `
+            <div class="receipt-row" style="color:var(--success);">
+              <span>+ ${saving.name}</span>
+              <span style="font-weight:600;">+${saving.amount.toLocaleString("kk-KZ")} ₸</span>
+            </div>`;
+        });
+      }
+
+      // 3. 3 төтенше жағдай
+      const emergenciesListContainer = document.getElementById("receiptEmergenciesList");
+      emergenciesListContainer.innerHTML = "";
+      currentRandomSituations.forEach((sit, idx) => {
+        emergenciesListContainer.innerHTML += `
+          <div class="receipt-row" style="color:var(--danger);">
+            <span>⚡ ${idx + 1}-бөлім: ${sit.title}</span>
+            <span style="font-weight:600;">-${sit.cost.toLocaleString("kk-KZ")} ₸</span>
+          </div>`;
+      });
+
+      // 4. Толық қорытынды есеп жолдары
+      const spentItems = calculateSpentOnItems();
+      let emergTotal = 0;
+      currentRandomSituations.forEach(s => emergTotal += s.cost);
+      const totalSpent = spentItems + emergTotal;
+      const totalSaved = calculateTotalSaved();
+
+      document.getElementById("receiptTotalSpentRow").innerHTML = `<span>Жалпы барлық шығындар:</span><span>-${totalSpent.toLocaleString("kk-KZ")} ₸</span>`;
+      document.getElementById("receiptTotalSavedRow").innerHTML = `<span>Жалпы үнемдеулер:</span><span>+${totalSaved.toLocaleString("kk-KZ")} ₸</span>`;
+      document.getElementById("receiptFinalBalanceRow").innerHTML = `<span>Қорытынды қалдық:</span><span>${finalBalance.toLocaleString("kk-KZ")} ₸</span>`;
+    }
+
+    function resetAllGame() {
+      selectedItems.clear();
+      appliedSavings.clear();
+      currentRandomSituations = [];
+      currentStageIndex = 0;
+      
+      for (let i = 1; i <= 3; i++) {
+        const btn = document.getElementById("saveBtn" + i);
+        if (btn) {
+          btn.style.background = "transparent";
+          btn.style.color = "var(--primary)";
+        }
+      }
+      document.getElementById("saveBtn1").innerText = "+2 000 ₸ үнемдеу";
+      document.getElementById("saveBtn2").innerText = "+2 500 ₸ үнемдеу";
+      document.getElementById("saveBtn3").innerText = "+3 000 ₸ үнемдеу";
+      
+      switchScreen("screenIntro");
+      document.getElementById("budgetBar").style.display = "none";
+    }
+  </script>
+</body>
+</html>
